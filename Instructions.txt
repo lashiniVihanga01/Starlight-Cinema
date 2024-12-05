@@ -11,5 +11,3 @@ CTRL + ALT + SHIFT + S    -> New project library -> Java
 
 * Admin panel and the website are two different applications that uses the same database.
 
-
-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

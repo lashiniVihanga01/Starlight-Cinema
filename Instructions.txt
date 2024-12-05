@@ -1,0 +1,15 @@
+______Instructions______
+
+1. Copy the JRE files in the 'Needed JRE Files' folder to the 'lib' folder in Tomcat server directory.
+
+
+Notes :-
+
+* If intellij failed to start the project, delete the .idea folder and re import the jar files
+
+CTRL + ALT + SHIFT + S    -> New project library -> Java
+
+* Admin panel and the website are two different applications that uses the same database.
+
+
+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

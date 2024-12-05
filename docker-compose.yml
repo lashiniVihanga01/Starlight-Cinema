@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  # Admin Panel Service (CRUD-Panel)
+  admin-panel:
+    build:
+      context: ./Admin-Panel/CRUD-Panel
+    ports:
+      - "8080:8080"  # Expose port 8080 for Admin Panel
+    depends_on:
+      - database  # Ensure MySQL database is up first
+
+  # Website Service (Movie-Lanka-SNS)
+  website:
+    build:
+      context: ./WebSite/Movie-Lanka-SNS
+    ports:
+      - "8081:8080"  # Expose port 8080 for Website, mapping to 8081 on host
+    depends_on:
+      - database  # Ensure MySQL database is up first
+
+  # MySQL Database Service
+  database:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testmdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"  # Expose MySQL port
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data
+      - ./testmdb.sql:/docker-entrypoint-initdb.d/testmdb.sql  # Initialize DB with SQL file
+
+volumes:
+  db_data:  # Persist MySQL data to avoid data loss on container restart

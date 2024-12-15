@@ -1,704 +1,230 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.sql.*" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="js/index.js" defer></script>
-    <link href="css/index.css" rel="stylesheet">
-    <title>Config Panel</title>
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
-<%--    <script>--%>
-<%--        function sendRequest(typeName) {--%>
-<%--            const http = new XMLHttpRequest()--%>
+    <title>Movie Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe); /* Smooth gradient background */
+            color: #333333;
+        }
+        .movie-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .navbar-link:hover {
+            text-decoration: underline;
+        }
+        .carousel img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .bg-dark {
+            background-color: #222222; /* Dark theme for footer and navbar */
+        }
+        .text-light {
+            color: #e5e7eb; /* Light text for contrast */
+        }
+        .movie-card {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .movie-card img {
+            border-radius: 10px;
+        }
+        .movie-card .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+        .movie-card .genre {
+            color: #3182ce;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+        .movie-card .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        footer {
+            background-color: #1f2937;
+        }
+        .icon {
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        /* Navbar buttons */
+        .navbar-btn {
+            background-color: #3182ce; /* Button color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .navbar-btn:hover {
+            background-color: #2c5282; /* Darker button color */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        .navbar-link {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
 
-<%--            http.open("GET", "/config?mName='" + typeName + "'")--%>
-<%--            http.send()--%>
-<%--            // http.onload = () => console.log(http.responseText)--%>
-<%--        }--%>
-<%--    </script>--%>
-    <script>
-        $(document).on("click", "#btn-search", function() {
-            $.get("configUpdate?mName2='"+document.getElementsByName('mName2')[0].value+"'", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-                    $("#name-txt2").val(responseJson[0]);
-                    $("#r-date-txt2").val(responseJson[2]);
-                    $("#genre-txt2").val(responseJson[3]);
-                    $("#rating-txt2").val(responseJson[4]);
-                    $("#duration-txt2").val(responseJson[5]);
-                    $("#desc-txt2").val(responseJson[6]);
-                    $("#trailer-txt").val(responseJson[7]);
-                    $("#tkt-txt").val(responseJson[8]);
-                    $("#search-img").attr('src',responseJson[1]);
-                    // $("#mNameTxt").val(item);
-                });
-            });
-        });
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
-        $(document).on("click", "#btn-fetch", function() {
-            $.get("config?mName='"+document.getElementsByName('mName')[0].value+"'", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-                    $("#name-txt").val(responseJson[0]);
-                    $("#r-date-txt").val(responseJson[1]);
-                    $("#rating-txt").val(responseJson[2]);
-                    $("#desc-txt").val(responseJson[3]);
-                    $("#fetch-img").attr('src',responseJson[4]);
-                    $("#genre-txt").val(responseJson[5]);
-                    $("#duration-txt").val(responseJson[6]);
-                    $("#trailer_url").val(responseJson[7]);
-                });
-            });
-        });
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
 
-    </script>
-    <script>
-        let x=1;
-        $(document).ready(function() {
-            $.post("configUM", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-
-                $("#dsp-p"+x.toString()).text(item);
-
-                x++;
-
-                });
-            });
-        });
-    </script>
-
-    <script>
-        let z=1;
-        $(document).ready(function() {
-            $.post("configLM", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-
-                    $("#dsp-lp"+z.toString()).text(item);
-
-                    z++;
-
-                });
-            });
-        });
-    </script>
-
-    <script>
-        let y=1;
-        $(document).ready(function() {
-            $.post("configNS", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-
-                    $("#dsp-ns-p"+y.toString()).text(item);
-
-                    y++;
-
-                });
-            });
-        });
-    </script>
-
+    </style>
 </head>
-<body>
-<div class="tabs">
-    <input type="button" data-tab-target="#add-m" class="active tab" value="Add Movies">
-    <input type="button" data-tab-target="#update-m" class="tab" value="Update Movies">
-    <input type="button" data-tab-target="#latest-m" class="tab" value="Latest Movies">
-    <input type="button" data-tab-target="#upcoming-m" class="tab" value="Upcoming Movies" >
-    <input type="button" data-tab-target="#n-s-m" class="tab" value="Now Showing Movies">
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Navbar -->
+<nav class="bg-dark p-6 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="index.jsp" class="text-light text-2xl font-bold navbar-link">Starlight Cinema</a>
+        </div>
+        <div class="space-x-6">
+            <a href="index.jsp" class="navbar-btn">Home</a>
+            <a href="contact.jsp" class="navbar-btn">Contact Us</a>
+            <a href="about.jsp" class="navbar-btn">About Us</a>
+            <%
+                String loggedInUser = (String) session.getAttribute("username");
+                if (loggedInUser != null) {
+            %>
+            <span class="text-light text-lg font-bold">Welcome <%= loggedInUser %>!</span>
+            <%
+            } else {
+            %>
+            <a href="login.jsp" class="navbar-btn">Login</a>
+            <%
+                }
+            %>
+        </div>
+    </div>
+</nav>
+
+
+<!-- Carousel -->
+<div class="carousel relative overflow-hidden max-w-6xl mx-auto my-8 rounded-lg shadow-lg">
+    <div class="relative w-full">
+        <div class="slide" style="display: block;">
+            <img src="./img/1.jpg" alt="Movie 1">
+        </div>
+        <div class="slide" style="display: none;">
+            <img src="./img/2.jpg" alt="Movie 2">
+        </div>
+    </div>
 </div>
 
-<div class="tab-content">
-    <div class="panel active" id="add-m" data-tab-content class="active">
-        <div class="tab-title"><h2 class="tab-title-id">Add Movies</h2></div>
-        <div class="inner-panel">
-            <div class="left-panel">
-                <form action="config" method="post" enctype="multipart/form-data">
-                <div class="rowl">
-                    <div class="rname">Movie Name:</div>
-                    <div class="rtype"><input type="text"  class="mxmw"  id="name-txt" name="mName"></div>
+<script>
+    const slides = document.querySelectorAll('.carousel .slide');
+    let currentSlide = 0;
+
+    setInterval(() => {
+        slides[currentSlide].style.display = 'none'; // Hide current slide
+        currentSlide = (currentSlide + 1) % slides.length; // Move to next slide
+        slides[currentSlide].style.display = 'block'; // Show next slide
+    }, 3000); // Change every 3 seconds
+</script>
+
+<!-- Main Content -->
+<div class="flex-grow max-w-6xl mx-auto p-8">
+    <h1 class="text-4xl font-extrabold text-white text-center mb-12 fade-in">Now Showing</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <%
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection conn = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/admindb", "root", "root");
+                String query = "SELECT * FROM movies";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    int movieId = rs.getInt("id");
+                    String title = rs.getString("title");
+                    int releaseYear = rs.getInt("release_year");
+                    String description = rs.getString("description");
+                    String trailerUrl = rs.getString("trailer_url");
+                    String photoPath = rs.getString("photo_path");
+                    String genre = rs.getString("genre");
+                    double ticketPrice = rs.getDouble("ticket_price");
+        %>
+        <div class="movie-card bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 fade-in">
+            <img src="<%= photoPath %>" alt="<%= title %>" class="w-full h-60 object-cover rounded-t-lg">
+            <div class="p-6">
+                <h2 class="title"><%= title %> (<%= releaseYear %>)</h2>
+                <p class="genre"><%= genre %></p>
+                <p class="text-gray-700 text-sm mb-4 truncate"><%= description %></p>
+                <div class="flex justify-between items-center">
+                    <a href="<%= trailerUrl %>" target="_blank" class="text-blue-500 hover:underline font-medium">
+                        <i class="fas fa-play icon"></i>Watch Trailer
+                    </a>
+                    <span class="price">$<%= ticketPrice %></span>
                 </div>
-                <div class="rowl">
-                    <div class="rname">Release Date:</div>
-                    <div class="rtype"><input type="text"  class="mxmw" id="r-date-txt" name="release-date"></div>
-                </div>
-                    <div class="rowl">
-                        <div class="rname">Duration:</div>
-                        <div class="rtype"><input type="text" class="mxmw" id="duration-txt" name="duration"></div>
-                    </div>
-                <div class="rowl">
-                    <div class="rname">Genre:</div>
-                    <div class="rtype"><input type="text"  class="mxmw" id="genre-txt" name="genre"></div>
-                </div>
-                <div class="rowl">
-                    <div class="rname">Rating:</div>
-                    <div class="rtype"><input type="text" class="mxmw"  id="rating-txt" name="rating"></div>
-                </div>
-                <div class="rowl">
-                    <div class="rname">Ticket Price:</div>
-                    <div class="rtype"><input type="text" class="mxmw" name="ticket-price"></div>
-                </div>
-                <div class="rowr btns">
-                    <div class="rtype-btn"><input type="button" value="Fetch" id="btn-fetch" class="btn-fetch" ></div>
-                    <div class="rtype-btn"><input type="reset" value="Reset" id="btn-reset" class="btn-reset"></div>
-                    <div class="rtype-btn"><input type="submit" value="Submit" id="btn-submit" class="btn-submit"></div>
-                </div>
+                <a href="BookTickets.jsp?movie_id=<%= movieId %>"
+                   class="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 text-center">
+                    <i class="fas fa-ticket-alt icon"></i> Book Tickets
+                </a>
             </div>
-            <div class="right-panel">
-                <div class="rowr">
-                    <div class="rname">Description:</div>
-<%--                    <div class="rtype"><input type="text" value="Year" class="mxmw" id="desc-txt" name="description"></div>--%>
-                    <div class="rtype"><textarea  id="desc-txt" name="description" cols="15" rows="7"></textarea></div>
-                </div>
-                <div class="rowr">
-                    <div class="rname">Trailer Url:</div>
-                    <div class="rtype" ><input type="text" id="trailer_url"   class="mxmw"  name="trailer_url"></div>
-                </div>
-                <div class="rowr">
-                    <div class="rname">Image:</div>
-                    <div class="rtype"><input type="file"  accept="image/*" class="img" name="file"></div>
-                </div>
-                <div class="rowr div-img">
-                    <img src="img/cinema-1294496__340.png" class="dsp-img" id="fetch-img" alt="fetch-img">
-                </div>
-            </div>
-            </form>
         </div>
-    </div>
-
-
-    <div class="panel" id="update-m" data-tab-content>
-        <div class="tab-title"><h2 class="tab-title-id">Update Movies</h2></div>
-        <div class="inner-panel">
-            <div class="left-panel">
-                <form action="configUpdate" method="post" enctype="multipart/form-data">
-                    <div class="rowl">
-                        <div class="rname">Movie Name:</div>
-                        <div class="rtype"><input type="text"  class="mxmw"  id="name-txt2" name="mName2"></div>
-                    </div>
-                    <div class="rowl">
-                        <div class="rname">Release Date:</div>
-                        <div class="rtype"><input type="text"  class="mxmw" id="r-date-txt2" name="release-date2"></div>
-                    </div>
-                    <div class="rowl">
-                        <div class="rname">Duration:</div>
-                        <div class="rtype"><input type="text" class="mxmw" id="duration-txt2" name="duration2"></div>
-                    </div>
-                    <div class="rowl">
-                        <div class="rname">Genre:</div>
-                        <div class="rtype"><input type="text"  class="mxmw" id="genre-txt2" name="genre2"></div>
-                    </div>
-                    <div class="rowl">
-                        <div class="rname">Rating:</div>
-                        <div class="rtype"><input type="text" class="mxmw"  id="rating-txt2" name="rating2"></div>
-                    </div>
-                    <div class="rowl">
-                        <div class="rname">Ticket Price:</div>
-                        <div class="rtype"><input type="text" class="mxmw" id="tkt-txt" name="ticket-price2"></div>
-                    </div>
-                    <div class="rowr btns">
-                        <div class="rtype-btn"><input type="button" value="Search" class="btn-fetch" id="btn-search"></div>
-                        <div class="rtype-btn"><input type="reset" value="Reset" id="btn-reset" class="btn-reset"></div>
-                        <div class="rtype-btn"><input type="submit" value="Submit" id="btn-submit" class="btn-submit"></div>
-                    </div>
-            </div>
-            <div class="right-panel">
-                <div class="rowr">
-                    <div class="rname">Description:</div>
-                    <%--                    <div class="rtype"><input type="text" value="Year" class="mxmw" id="desc-txt" name="description"></div>--%>
-                    <div class="rtype"><textarea  id="desc-txt2" name="description2" cols="15" rows="7"></textarea></div>
-                </div>
-                <div class="rowr">
-                    <div class="rname">Trailer Url:</div>
-                    <div class="rtype" ><input type="text"  class="mxmw" id="trailer-txt"  name="trailer_url2"></div>
-                </div>
-                <div class="rowr">
-                    <div class="rname">Image:</div>
-                    <div class="rtype"><input type="file" accept="image/*" class="img" name="file2"></div>
-                </div>
-                <div class="rowr div-img">
-                    <img src="img/cinema-1294496__340.png" class="dsp-img" id="search-img" alt="search-img">
-                </div>
-            </div>
-            </form>
-        </div>
-    </div>
-
-
-    <script>
-        $(document).on("click", "#lm-search-submit", function() {
-            $.get("configLM?sName='"+document.getElementsByName('text-l-movie-nm')[0].value+"'", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-                    $("#spn-id-l").text(responseJson[0]);
-                    $("#spn-name-l").text(responseJson[1]);
-                });
-            });
-        });
-    </script>
-
-    <div class="panel" id="latest-m" data-tab-content>
-        <div class="inner-panel-upcoming-m">
-            <div class="add-uc-movie">
-                <div class="uc-search">
-                    <div class="wrap">
-                        <div class="search">
-                            <input type="text" class="searchTerm" name="text-l-movie-nm" placeholder="Search..." >
-                            <button type="submit" class="searchButton" name="submit-uc-search" id="lm-search-submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-uc">
-                    <div class="add-uc-text-div-id"><p>ID : <span id="spn-id-l">____</span></p></div>
-                    <div class="add-uc-text-div"><p>Name : <span id="spn-name-l">____________</span></p></div>
-                    <div class="add-form-uc-div">
-                        <form action="configLM" method="get" name="add-form-uc">
-                            <input type="hidden" name="AddReady" value="1">
-                            <input type="submit" name="add-form-uc-submit" value="Add" class="add-form-uc-submit" >
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                function sendLmDltRequest(typeName) {
-                    const http = new XMLHttpRequest()
-
-                    http.open("GET", "/configLM?dltRec='" + typeName + "'");
-                    http.send();
-                    http.onload = () => {
-                        if(http.responseText==="1"){
-                            window.alert("Record Deleted Successfully");
-                        }else{
-                            window.alert("Process Failed");
-                        }
-                    };
+        <%
                 }
-
-            </script>
-            <div class="dsp-svd">
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp1">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp2">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp3">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp4">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button  class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp1').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp5">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp6">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp7">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp8">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp5').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp9">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp10">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp11">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp12">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp9').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp13">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp14">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp15">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp16">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp13').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp17">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp18">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp19">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp20">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp17').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-lp21">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp22">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp23">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-lp24">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendLmDltRequest(document.getElementById('dsp-lp21').textContent)">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                out.println("<p class='text-red-500 text-center'>Error loading movies: " + e.getMessage() + "</p>");
+            }
+        %>
     </div>
-
-
-    <script>
-        $(document).on("click", "#ucm-search-submit", function() {
-            $.get("configUM?sName='"+document.getElementsByName('text-uc-movie-nm')[0].value+"'", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-                    $("#spn-id-uc").text(responseJson[0]);
-                    $("#spn-name-uc").text(responseJson[1]);
-                });
-            });
-        });
-    </script>
-
-    <div class="panel" id="upcoming-m" data-tab-content>
-        <div class="inner-panel-upcoming-m">
-            <div class="add-uc-movie">
-                <div class="uc-search">
-                    <div class="wrap">
-                        <div class="search">
-                            <input type="text" class="searchTerm" name="text-uc-movie-nm" placeholder="Search..."  id="text-uc-movie-id">
-                            <button type="submit" class="searchButton" name="submit-uc-search" id="ucm-search-submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-uc">
-                    <div class="add-uc-text-div-id"><p>ID : <span id="spn-id-uc">____</span></p></div>
-                    <div class="add-uc-text-div"><p>Name : <span id="spn-name-uc">____________</span></p></div>
-                    <div class="add-form-uc-div">
-                        <form action="configUM" method="get" name="add-form-uc">
-                            <input type="hidden" name="AddReady" value="1">
-                            <input type="submit" name="add-form-uc-submit" value="Add" class="add-form-uc-submit" >
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                function sendDltRequest(typeName) {
-                    const http = new XMLHttpRequest()
-
-                    http.open("GET", "/configUM?dltRec='" + typeName + "'");
-                    http.send();
-                    http.onload = () => {
-                        if(http.responseText==="1"){
-                            window.alert("Record Deleted Successfully");
-                        }else{
-                            window.alert("Process Failed");
-                        }
-                    };
-                }
-
-            </script>
-            <div class="dsp-svd">
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p1">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p2">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p3">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p4">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button id="dlt-btn1" class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p1').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p5">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p6">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p7">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p8">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p5').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p9">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p10">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p11">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p12">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p9').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p13">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p14">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p15">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p16">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p13').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p17">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p18">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p19">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p20">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p17').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-p21">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p22">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p23">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-p24">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendDltRequest(document.getElementById('dsp-p21').textContent)">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        $(document).on("click", "#ns-search-submit", function() {
-            $.get("configNS?sName='"+document.getElementsByName('text-ns-movie')[0].value+"'", function(responseJson) {
-                $.each(responseJson, function(index, item) {
-                    $("#spn-id-ns").text(responseJson[0]);
-                    $("#spn-name-ns").text(responseJson[1]);
-                });
-            });
-        });
-    </script>
-
-    <div class="panel" id="n-s-m" data-tab-content>
-        <div class="inner-panel-upcoming-m">
-            <div class="add-uc-movie">
-                <div class="uc-search">
-                    <div class="wrap">
-                        <div class="search">
-                            <input type="text" class="searchTerm"  placeholder="Search..."  name="text-ns-movie">
-                            <button type="submit" class="searchButton" name="submit-uc-search"  id="ns-search-submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="add-uc">
-                    <div class="add-uc-text-div-id"><p>ID : <span id="spn-id-ns">____</span></p></div>
-                    <div class="add-uc-text-div"><p>Name : <span id="spn-name-ns">____________</span></p></div>
-                    <div class="add-form-uc-div">
-                        <form action="configNS" method="get" name="add-form-uc">
-                            <input type="hidden" name="AddReady" value="1">
-                            <input type="submit" name="add-form-uc-submit" value="Add" class="add-form-uc-submit">
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-
-                function sendNsDltRequest(typeName) {
-                    const http = new XMLHttpRequest()
-
-                    http.open("GET", "/configNS?dltRec='" + typeName + "'");
-                    http.send();
-                    http.onload = () => {
-                        if(http.responseText==="1"){
-                            window.alert("Record Deleted Successfully");
-                        }else{
-                            window.alert("Process Failed");
-                        }
-                    };
-                }
-
-            </script>
-
-
-            <div class="dsp-svd">
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p1">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p2">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p3">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p4">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p1').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p5">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p6">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p7">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p8">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p5').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p9">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p10">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p11">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p12">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p9').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p13">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p14">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p15">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p16">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p13').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p17">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p18">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p19">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p20">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p17').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p21">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p22">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p23">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p24">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p21').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p25">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p26">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p27">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p28">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p25').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p29">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p30">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p31">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p32">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p29').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p33">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p34">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p35">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p36">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p33').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p37">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p38">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p39">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p40">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p37').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p41">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p42">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p43">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p44">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p41').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p45">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p46">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p47">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p48">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p45').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p49">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p50">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p51">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p52">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p49').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p53">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p54">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p55">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p56">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p53').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p57">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p58">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p59">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p60">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p57').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p61">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p62">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p63">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p64">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p61').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p65">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p66">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p67">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p68">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p65').textContent)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="dsp-uc-movie">
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p69">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p70">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p71">______</p></div>
-                    <div class="dsp-uc-inner"><p id="dsp-ns-p72">______</p></div>
-                    <div class="dsp-uc-inner dsp-uc-inner-btn">
-                        <button class="dlt-btn" onclick="sendNsDltRequest(document.getElementById('dsp-ns-p69').textContent)">Delete</button>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-    </div>
-
 </div>
+
+<!-- Footer -->
+<!-- Footer -->
+<footer class="bg-dark text-light py-6 mt-auto">
+    <div class="max-w-6xl mx-auto text-center">
+        <p class="text-sm">
+            <i class="fas fa-copyright"></i> 2024 Starlight Cinema. All rights reserved.
+        </p>
+        <div class="flex justify-center space-x-6 mt-4">
+            <a href="#" class="text-light hover:text-yellow-400">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-light hover:text-yellow-400">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="text-light hover:text-yellow-400">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+        <div class="mt-6">
+            <a href="feedback.jsp"
+               class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition-all">
+                Review and Feedbacks
+            </a>
+        </div>
+    </div>
+</footer>
+
+
 </body>
 </html>

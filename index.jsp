@@ -1,230 +1,188 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.sql.*" %>
+<%@ page import="javax.servlet.http.*" %>
+<%@ page import="javax.servlet.*" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Booking System</title>
+    <title>Movie List and Add Movie</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe); /* Smooth gradient background */
-            color: #333333;
-        }
-        .movie-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .navbar-link:hover {
-            text-decoration: underline;
-        }
-        .carousel img {
-            width: 100%;
-            height: 450px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        .bg-dark {
-            background-color: #222222; /* Dark theme for footer and navbar */
-        }
-        .text-light {
-            color: #e5e7eb; /* Light text for contrast */
-        }
-        .movie-card {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-        }
-        .movie-card img {
-            border-radius: 10px;
-        }
-        .movie-card .title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #1a202c;
-        }
-        .movie-card .genre {
-            color: #3182ce;
-            text-transform: uppercase;
-            font-size: 1rem;
-        }
-        .movie-card .price {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #2d3748;
-        }
-        footer {
-            background-color: #1f2937;
-        }
-        .icon {
-            font-size: 1.25rem;
-            margin-right: 0.5rem;
-        }
-        /* Navbar buttons */
-        .navbar-btn {
-            background-color: #3182ce; /* Button color */
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-        }
-        .navbar-btn:hover {
-            background-color: #2c5282; /* Darker button color */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
-        }
-        .navbar-link {
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        /* Fade-in animation */
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 1s ease-out;
-        }
-
-    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
 
 <!-- Navbar -->
-<nav class="bg-dark p-6 shadow-lg">
+<nav class="bg-purple-600 p-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <div class="flex items-center">
-            <a href="index.jsp" class="text-light text-2xl font-bold navbar-link">Starlight Cinema</a>
-        </div>
-        <div class="space-x-6">
-            <a href="index.jsp" class="navbar-btn">Home</a>
-            <a href="contact.jsp" class="navbar-btn">Contact Us</a>
-            <a href="about.jsp" class="navbar-btn">About Us</a>
-            <%
-                String loggedInUser = (String) session.getAttribute("username");
-                if (loggedInUser != null) {
-            %>
-            <span class="text-light text-lg font-bold">Welcome <%= loggedInUser %>!</span>
-            <%
-            } else {
-            %>
-            <a href="login.jsp" class="navbar-btn">Login</a>
-            <%
-                }
-            %>
-        </div>
+        <a href="?view=add_movie" class="text-white text-xl font-semibold">Add Movie</a>
+        <a href="?view=movie_list" class="text-white text-xl font-semibold">Movie List</a>
     </div>
 </nav>
 
-
-<!-- Carousel -->
-<div class="carousel relative overflow-hidden max-w-6xl mx-auto my-8 rounded-lg shadow-lg">
-    <div class="relative w-full">
-        <div class="slide" style="display: block;">
-            <img src="./img/1.jpg" alt="Movie 1">
-        </div>
-        <div class="slide" style="display: none;">
-            <img src="./img/2.jpg" alt="Movie 2">
-        </div>
-    </div>
-</div>
-
-<script>
-    const slides = document.querySelectorAll('.carousel .slide');
-    let currentSlide = 0;
-
-    setInterval(() => {
-        slides[currentSlide].style.display = 'none'; // Hide current slide
-        currentSlide = (currentSlide + 1) % slides.length; // Move to next slide
-        slides[currentSlide].style.display = 'block'; // Show next slide
-    }, 3000); // Change every 3 seconds
-</script>
-
 <!-- Main Content -->
-<div class="flex-grow max-w-6xl mx-auto p-8">
-    <h1 class="text-4xl font-extrabold text-white text-center mb-12 fade-in">Now Showing</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="max-w-6xl mx-auto p-8">
+
+    <%
+        String view = request.getParameter("view");
+        if (view == null || view.equals("movie_list")) {
+    %>
+
+    <!-- Movie List Content -->
+    <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">Movies List</h1>
+    <table class="w-full bg-white shadow-lg rounded-lg overflow-hidden">
+        <thead>
+        <tr class="bg-gray-800 text-white">
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Title</th>
+            <th class="px-4 py-2">Release Year</th>
+            <th class="px-4 py-2">Description</th>
+            <th class="px-4 py-2">Photo</th>
+            <th class="px-4 py-2">Action</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
         <%
+            // Check if delete request is present
+            String deleteId = request.getParameter("delete_id");
+            if (deleteId != null) {
+                try {
+                    // Delete movie logic here
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/admindb", "root", "root");
+                    String deleteQuery = "DELETE FROM movies WHERE id = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(deleteQuery);
+                    pstmt.setInt(1, Integer.parseInt(deleteId));
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    conn.close();
+                    out.println("<script>alert('Movie deleted successfully!'); window.location.href='index.jsp?view=movie_list';</script>");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    out.println("<script>alert('Error deleting movie: " + e.getMessage() + "');</script>");
+                }
+            }
+
+            // Display all movies
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/admindb", "root", "root");
-                String query = "SELECT * FROM movies";
-                PreparedStatement stmt = conn.prepareStatement(query);
-                ResultSet rs = stmt.executeQuery();
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/admindb", "root", "root");
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM movies");
 
                 while (rs.next()) {
                     int movieId = rs.getInt("id");
-                    String title = rs.getString("title");
-                    int releaseYear = rs.getInt("release_year");
-                    String description = rs.getString("description");
-                    String trailerUrl = rs.getString("trailer_url");
-                    String photoPath = rs.getString("photo_path");
-                    String genre = rs.getString("genre");
-                    double ticketPrice = rs.getDouble("ticket_price");
-        %>
-        <div class="movie-card bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 fade-in">
-            <img src="<%= photoPath %>" alt="<%= title %>" class="w-full h-60 object-cover rounded-t-lg">
-            <div class="p-6">
-                <h2 class="title"><%= title %> (<%= releaseYear %>)</h2>
-                <p class="genre"><%= genre %></p>
-                <p class="text-gray-700 text-sm mb-4 truncate"><%= description %></p>
-                <div class="flex justify-between items-center">
-                    <a href="<%= trailerUrl %>" target="_blank" class="text-blue-500 hover:underline font-medium">
-                        <i class="fas fa-play icon"></i>Watch Trailer
-                    </a>
-                    <span class="price">$<%= ticketPrice %></span>
-                </div>
-                <a href="BookTickets.jsp?movie_id=<%= movieId %>"
-                   class="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 text-center">
-                    <i class="fas fa-ticket-alt icon"></i> Book Tickets
-                </a>
-            </div>
-        </div>
-        <%
+                    out.println("<tr class='hover:bg-gray-50'>");
+                    out.println("<td class='px-4 py-2 text-center'>" + movieId + "</td>");
+                    out.println("<td class='px-4 py-2'>" + rs.getString("title") + "</td>");
+                    out.println("<td class='px-4 py-2 text-center'>" + rs.getInt("release_year") + "</td>");
+                    out.println("<td class='px-4 py-2'>" + rs.getString("description") + "</td>");
+                    out.println("<td class='px-4 py-2 text-center'><img src='" + rs.getString("photo_path") + "' alt='Movie Photo' class='w-20 h-20 rounded-lg'></td>");
+                    out.println("<td class='px-4 py-2 text-center'>");
+                    out.println("<form action='' method='post' onsubmit='return confirmDelete()'>");
+                    out.println("<input type='hidden' name='delete_id' value='" + movieId + "'>");
+                    out.println("<button type='submit' class='bg-red-600 text-white py-1 px-4 rounded-lg hover:bg-red-700'>Delete</button>");
+                    out.println("</form>");
+                    out.println("</td>");
+                    out.println("</tr>");
                 }
+
                 conn.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                out.println("<p class='text-red-500 text-center'>Error loading movies: " + e.getMessage() + "</p>");
+                out.println("<tr><td colspan='6' class='px-4 py-2 text-center text-red-500'>Error loading movies: " + e.getMessage() + "</td></tr>");
             }
         %>
-    </div>
+        </tbody>
+    </table>
+
+    <%
+    } else if (view.equals("add_movie")) {
+    %>
+
+    <!-- Add Movie Form -->
+    <!-- Add Movie Form -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Add a New Movie</h1>
+    <form action="addMovie" method="post" enctype="multipart/form-data" class="space-y-4">
+        <!-- Title -->
+        <div>
+            <label for="title" class="block text-sm font-medium text-gray-700">Movie Title</label>
+            <input type="text" id="title" name="title" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Release Year -->
+        <div>
+            <label for="release_year" class="block text-sm font-medium text-gray-700">Release Year</label>
+            <input type="number" id="release_year" name="release_year" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Description -->
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" name="description" rows="3" required
+                      class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400"></textarea>
+        </div>
+        <!-- Duration -->
+        <div>
+            <label for="duration" class="block text-sm font-medium text-gray-700">Duration (Minutes)</label>
+            <input type="number" id="duration" name="duration" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Genre -->
+        <div>
+            <label for="trailer_url" class="block text-sm font-medium text-gray-700">YouTube Trailer URL</label>
+            <input type="text" id="trailer_url" name="trailer_url"
+                   placeholder="https://www.youtube.com/watch?v=example" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <div>
+            <label for="genre" class="block text-sm font-medium text-gray-700">Genre</label>
+            <input type="text" id="genre" name="genre" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Rating -->
+        <div>
+            <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+            <input type="text" id="rating" name="rating" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Ticket Price -->
+        <div>
+            <label for="ticket_price" class="block text-sm font-medium text-gray-700">Ticket Price</label>
+            <input type="text" id="ticket_price" name="ticket_price" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Status -->
+        <div>
+            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+            <input type="text" id="status" name="status" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Photo -->
+        <div>
+            <label for="photo" class="block text-sm font-medium text-gray-700">Movie Photo</label>
+            <input type="file" id="photo" name="photo" accept="image/*" required
+                   class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        </div>
+        <!-- Submit Button -->
+        <button type="submit"
+                class="w-full bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition">
+            Add Movie
+        </button>
+    </form>
+
+
+    <%
+        }
+    %>
+
 </div>
 
-<!-- Footer -->
-<!-- Footer -->
-<footer class="bg-dark text-light py-6 mt-auto">
-    <div class="max-w-6xl mx-auto text-center">
-        <p class="text-sm">
-            <i class="fas fa-copyright"></i> 2024 Starlight Cinema. All rights reserved.
-        </p>
-        <div class="flex justify-center space-x-6 mt-4">
-            <a href="#" class="text-light hover:text-yellow-400">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="text-light hover:text-yellow-400">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="text-light hover:text-yellow-400">
-                <i class="fab fa-instagram"></i>
-            </a>
-        </div>
-        <div class="mt-6">
-            <a href="feedback.jsp"
-               class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition-all">
-                Review and Feedbacks
-            </a>
-        </div>
-    </div>
-</footer>
-
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this movie?");
+    }
+</script>
 
 </body>
 </html>
